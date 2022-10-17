@@ -1,0 +1,47 @@
+from model.exercicios import Exercicio
+from conexion.oracle_queries import OracleQueries
+
+class Controller_Exercicios:
+    def __init__(self):
+        pass
+
+    def cadastrar_exercicio(self) -> Exercicio:
+        ''' Ref.: https://cx-oracle.readthedocs.io/en/latest/user_guide/plsql_execution.html#anonymous-pl-sql-blocks'''
+
+        oracle = OracleQueries(can_write=True)
+        oracle.connect()
+
+        codigo_exercicio = input("Exercicio(Novo): ")
+
+        if self.verifica_existencia_exercicio(oracle, codigo_exercicio):
+            nome = input("Nome (Novo): ")
+            oracle.write(f"inset into alunos values ('{codigo_exercicio}', '{nome}')")
+
+            df_aluno = oracle.sqlToDataFrame(
+                f"select cpf, nome_aluno from alunos where cpf = '{cpf}'")
+            novo_aluno = Alunos(df_aluno.cpf.values[0],
+                                df_aluno.nome.values[0])
+            print(novo_aluno.to_string())
+            return novo_aluno
+        else:
+            print(f"O CPF {cpf} não existe.")
+            return None
+
+    def excluir_aluno(self):
+        oracle = OracleQueries(can_write=True)
+        oracle.connect()
+
+        cpf = int(input("CPF do aluno a ser excluído: "))
+
+        if not self.verifica_existencia_aluno(oracle, cpf):
+            df_aluno = oracle.sqlToDataFrame(f"select cpf, nome from clientes where cpf = {cpf}")
+            oracle.write(f"delete from alunos where cpf = {cpf}")
+            aluno_excluido = Alunos(df_aluno.cpf.values[0], df_aluno.nome.values[0])
+            print("Aluno removido com sucesso!")
+            print(aluno_excluido.to_string())
+        else:
+            print(f"O CPF {cpf} não existe.")
+
+    def verifica_existencia_aluno(self,oracle: OracleQueries,cpf: str = None) -> bool:
+        df_aluno = oracle.sqlToDataFrame(f"select cpf, nome_aluno from alunos where cpf = {cpf} f")
+        return df_aluno.empty
