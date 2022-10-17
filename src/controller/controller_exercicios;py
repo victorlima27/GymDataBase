@@ -1,4 +1,4 @@
-from model.exercicios import Exercicio
+from model.exercicios import Exercicio, Exercicios
 from conexion.oracle_queries import OracleQueries
 
 class Controller_Exercicios:
@@ -14,34 +14,34 @@ class Controller_Exercicios:
         codigo_exercicio = input("Exercicio(Novo): ")
 
         if self.verifica_existencia_exercicio(oracle, codigo_exercicio):
-            nome = input("Nome (Novo): ")
-            oracle.write(f"inset into alunos values ('{codigo_exercicio}', '{nome}')")
+            codigo_exercicio = input("Codigo (Novo): ")
+            oracle.write(f"inset into alunos values ('{codigo_exercicio}', '{codigo_exercicio}')")
 
-            df_aluno = oracle.sqlToDataFrame(
-                f"select cpf, nome_aluno from alunos where cpf = '{cpf}'")
-            novo_aluno = Alunos(df_aluno.cpf.values[0],
-                                df_aluno.nome.values[0])
-            print(novo_aluno.to_string())
-            return novo_aluno
+            df_exercicio = oracle.sqlToDataFrame(
+                f"select codigo_exercicio, nome_exercicio from exercicios where codigo_exercicio = '{codigo_exercicio}'")
+            novo_exercicio = Exercicios(df_exercicio.codigo_exercicio.values[0],
+                                df_exercicio.nome_exercicio.values[0])
+            print(novo_exercicio.to_string())
+            return novo_exercicio
         else:
-            print(f"O CPF {cpf} não existe.")
+            print(f"O Codigo {codigo_exercicio} não existe.")
             return None
 
-    def excluir_aluno(self):
+    def excluir_exercicio(self):
         oracle = OracleQueries(can_write=True)
         oracle.connect()
 
-        cpf = int(input("CPF do aluno a ser excluído: "))
+        codigo_exercicio = int(input("Codigo do exercicio a ser excluído: "))
 
-        if not self.verifica_existencia_aluno(oracle, cpf):
-            df_aluno = oracle.sqlToDataFrame(f"select cpf, nome from clientes where cpf = {cpf}")
-            oracle.write(f"delete from alunos where cpf = {cpf}")
-            aluno_excluido = Alunos(df_aluno.cpf.values[0], df_aluno.nome.values[0])
-            print("Aluno removido com sucesso!")
-            print(aluno_excluido.to_string())
+        if not self.verifica_existencia_exercicio(oracle, codigo_exercicio):
+            df_aluno = oracle.sqlToDataFrame(f"select codigo_exercicio, nome_exercicio from exercicios where codigo_exercicio = {codigo_exercicio}")
+            oracle.write(f"delete from alunos where codigo_exercicio = {codigo_exercicio}")
+            codigo_excluido = Exercicios(df_aluno.codigo_exercicio.values[0], df_aluno.nome_exercicio.values[0])
+            print("Exercicios removido com sucesso!")
+            print(codigo_excluido.to_string())
         else:
-            print(f"O CPF {cpf} não existe.")
+            print(f"O codigo {codigo_exercicio} não existe.")
 
-    def verifica_existencia_aluno(self,oracle: OracleQueries,cpf: str = None) -> bool:
-        df_aluno = oracle.sqlToDataFrame(f"select cpf, nome_aluno from alunos where cpf = {cpf} f")
-        return df_aluno.empty
+    def verifica_existencia_exercicio(self,oracle: OracleQueries,codigo_exercicio: int = None) -> bool:
+        df_exercicio = oracle.sqlToDataFrame(f"select codigo_exercicio, nome_exercicio from exercicios where codigo_exercicio = {codigo_exercicio} f")
+        return df_exercicio.empty

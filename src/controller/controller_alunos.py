@@ -32,6 +32,7 @@ class Controller_Alunos:
         oracle = OracleQueries(can_write=True)
         oracle.connect()
 
+        self.listar_alunos(oracle, need_connect=True)
         cpf = int(input("CPF do aluno a ser excluído: "))
 
         if not self.verifica_existencia_aluno(oracle, cpf):
@@ -46,3 +47,15 @@ class Controller_Alunos:
     def verifica_existencia_aluno(self,oracle: OracleQueries,cpf: str = None) -> bool:
         df_aluno = oracle.sqlToDataFrame(f"select cpf, nome_aluno from alunos where cpf = {cpf} f")
         return df_aluno.empty
+
+
+    def listar_alunos(self, oracle:OracleQueries, need_connect:bool=False):
+        query = """
+                select a.cpf
+                    , a.nome_aluno 
+                from alunos a
+                order by a.nome_sluno
+                """
+        if need_connect:
+            oracle.connect()
+        print(oracle.sqlToDataFrame(query))
