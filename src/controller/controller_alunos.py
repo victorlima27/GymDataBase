@@ -54,7 +54,7 @@ class Controller_Alunos:
                 select a.cpf
                     , a.nome_aluno 
                 from alunos a
-                order by a.nome_sluno
+                order by a.nome_aluno
                 """
         if need_connect:
             oracle.connect()
