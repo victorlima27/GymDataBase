@@ -19,8 +19,7 @@ class Controller_Exercicios:
 
             df_exercicio = oracle.sqlToDataFrame(
                 f"select codigo_exercicio, nome_exercicio from exercicios where codigo_exercicio = '{codigo_exercicio}'")
-            novo_exercicio = Exercicios(df_exercicio.codigo_exercicio.values[0],
-                                df_exercicio.nome_exercicio.values[0])
+            novo_exercicio = Exercicios(df_exercicio.codigo_exercicio.values[0],df_exercicio.nome_exercicio.values[0])
             print(novo_exercicio.to_string())
             return novo_exercicio
         else:

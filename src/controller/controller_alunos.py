@@ -12,7 +12,17 @@ class Controller_Alunos:
         oracle = OracleQueries(can_write=True)
         oracle.connect()
 
+        cursor = oracle.connect()
+
         cpf = input("CPF(Novo): ")
+
+        data = dict(nome_aluno=nome, cpf=cpf)
+        cursor.execute("""
+        begin
+            :codigo := ALUNOS_CODIGO_ALUNO_SEQ.NEXTVAL;
+            insert into alunos values(:nome_aluno, :cpf);
+        end;
+        """, data)
 
         if self.verifica_existencia_aluno(oracle, cpf):
             nome = input("Nome (Novo): ")
@@ -20,13 +30,15 @@ class Controller_Alunos:
 
             df_aluno = oracle.sqlToDataFrame(
                 f"select cpf, nome_aluno from alunos where cpf = '{cpf}'")
-            novo_aluno = Alunos(df_aluno.cpf.values[0],
-                                df_aluno.nome.values[0])
+            novo_aluno = Alunos(df_aluno.cpf.values[0],df_aluno.nome.values[0])
             print(novo_aluno.to_string())
             return novo_aluno
         else:
             print(f"O CPF {cpf} não existe.")
             return None
+    
+
+
 
     def excluir_aluno(self):
         oracle = OracleQueries(can_write=True)
